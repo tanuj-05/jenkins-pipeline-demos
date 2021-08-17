@@ -10,13 +10,13 @@ pipeline {
                 LOG_LEVEL='INFO'
             }
             steps {
-                echo "%${RELEASE}%"
-                echo "Building release %RELEASE% with log level %LOG_LEVEL%..."
+                echo "${RELEASE}"
+                echo "Building release ${RELEASE} with log level ${LOG_LEVEL}..."
             }
         }
         stage('Test') {
             steps {
-                echo "Testing. I can see release %RELEASE%, but not log level %LOG_LEVEL%"
+                echo "Testing. I can see release ${RELEASE}, but not log level ${LOG_LEVEL%}"
             }
         }
     }
