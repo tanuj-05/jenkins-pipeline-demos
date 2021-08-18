@@ -7,12 +7,12 @@ pipeline {
     stages {
         stage('Audit tools') {                        
             steps {
-                sh '''
+                bat """
                   git version
                   docker version
                   dotnet --list-sdks
                   dotnet --list-runtimes
-                '''
+                """
             }
         }
         stage('Build') {
