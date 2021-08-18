@@ -20,7 +20,7 @@ pipeline {
         }
         stage('Build') {
             environment {
-                VERSION_SUFFIX = "${bat(script:'if [ "${RC}" == "false" ] ; then echo -n "${VERSION_RC}+ci.${BUILD_NUMBER}"; else echo -n "${VERSION_RC}"; fi', returnStdout: true)}"
+                VERSION_SUFFIX = "${bat(script:'if [ "%RC%" == "false" ] ; then echo -n "${VERSION_RC}+ci.${BUILD_NUMBER}"; else echo -n "${VERSION_RC}"; fi', returnStdout: true)}"
             }
             steps {
               echo "Building version: ${VERSION} with suffix: ${VERSION_SUFFIX}"
