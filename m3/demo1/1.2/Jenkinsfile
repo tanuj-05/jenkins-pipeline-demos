@@ -10,37 +10,37 @@ pipeline {
     stages {
         stage('Audit tools') {                        
             steps {
-                bat """
+                sh '''
                   git version
                   docker version
                   dotnet --list-sdks
                   dotnet --list-runtimes
-                """
+                '''
             }
         }
         stage('Build') {
             environment {
-                VERSION_SUFFIX = "${bat(script:'if [ "${RC}" == "false" ] ; then echo -n "${VERSION_RC}+ci.${BUILD_NUMBER}"; else echo -n "${VERSION_RC}"; fi', returnStdout: true)}"
+                VERSION_SUFFIX = "${sh(script:'if [ "${RC}" == "false" ] ; then echo -n "${VERSION_RC}+ci.${BUILD_NUMBER}"; else echo -n "${VERSION_RC}"; fi', returnStdout: true)}"
             }
             steps {
               echo "Building version: ${VERSION} with suffix: ${VERSION_SUFFIX}"
-              bat 'dotnet build -p:VersionPrefix="${VERSION}" --version-suffix "${VERSION_SUFFIX}" ./m3/src/Pi.Web/Pi.Web.csproj'
+              sh 'dotnet build -p:VersionPrefix="${VERSION}" --version-suffix "${VERSION_SUFFIX}" ./m3/src/Pi.Web/Pi.Web.csproj'
             }
         }
         stage('Unit Test') {
             steps {
               dir('./m3/src') {
-                bat """
+                sh '''
                     dotnet test --logger "trx;LogFileName=Pi.Math.trx" Pi.Math.Tests/Pi.Math.Tests.csproj
                     dotnet test --logger "trx;LogFileName=Pi.Runtime.trx" Pi.Runtime.Tests/Pi.Runtime.Tests.csproj
-                """
+                '''
                 mstest testResultsFile:"**/*.trx", keepLongStdio: true
               }
             }
         }
         stage('Smoke Test') {
             steps {
-              bat 'dotnet ./m3/src/Pi.Web/bin/Debug/netcoreapp3.1/Pi.Web.dll'
+              sh 'dotnet ./m3/src/Pi.Web/bin/Debug/netcoreapp3.1/Pi.Web.dll'
             }
         }
         stage('Publish') {
@@ -48,7 +48,7 @@ pipeline {
                 expression { return params.RC }
             } 
             steps {
-                bat 'dotnet publish -p:VersionPrefix="${VERSION}" --version-suffix "${VERSION_RC}" ./m3/src/Pi.Web/Pi.Web.csproj -o ./out'
+                sh 'dotnet publish -p:VersionPrefix="${VERSION}" --version-suffix "${VERSION_RC}" ./m3/src/Pi.Web/Pi.Web.csproj -o ./out'
                 archiveArtifacts('out/')
             }
         }
